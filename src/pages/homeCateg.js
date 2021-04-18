@@ -236,14 +236,18 @@ export default class Home extends Component {
       return `rgba(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},0.5)`
     };
 
-    getPostagem = async()=>{
-        await api.get("postagens/"+this.props.navigation.getParam('idCateg')).then( res => {
-          this.setState({  posts: res.data.post, cont: res.data.count});
-          const posts = this.state.posts.reverse();
-            this.setState({  posts: posts});
+    getPostagem = async () => {
+      await api.get("postagens/"+this.props.navigation.getParam('idCateg')).then((res) => {
+        res.data.post.forEach((info, index) => {
+          const nome = info.criador.split(' ');
+          res.data.post[index].criador =
+            `${nome[0]} ` + `${nome[1] ? nome[1].charAt(0) : ''}`;
         });
-        console.log(this.state.posts);
-    };
+        const posts = res.data.post.reverse();
+        this.setState({posts: posts, cont: res.data.count});
+      });
+    };    
+
     onRefresh = async () => {
         this.setState({
           isRefreshing: true,
